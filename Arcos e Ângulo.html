@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arcos, Ângulos e Relações na Circunferência</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+        }
+        .canvas-container {
+            position: relative;
+            width: 100%;
+            padding-top: 100%; /* Aspect ratio 1:1 */
+            touch-action: none;
+        }
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #f0f9ff;
+            border-radius: 0.75rem;
+            cursor: pointer;
+        }
+        .tab-button {
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .tab-button.active {
+            background-color: #0284c7;
+            color: white;
+            box-shadow: 0 4px 14px -2px rgb(2 132 199 / 0.3);
+        }
+        .tab-button:not(.active):hover {
+            color: #0284c7;
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-7xl">
+        <header class="text-center mb-10 p-6 bg-gradient-to-b from-sky-100 to-white rounded-xl shadow-sm">
+            <h1 class="text-3xl md:text-5xl font-bold text-sky-900">Geometria da Circunferência</h1>
+            <p class="text-lg text-gray-600 mt-3">Uma exploração interativa de arcos, ângulos e relações métricas.</p>
+        </header>
+
+        <!-- Página Inicial -->
+        <section id="inicio" class="text-center py-10 px-4">
+            <div class="max-w-2xl mx-auto">
+                <div class="flex justify-center gap-8 mb-8 text-sky-400">
+                    <svg class="w-16 h-16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="12" x2="17" y2="8"></line></svg>
+                    <svg class="w-16 h-16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"></path><path d="M10.5 7.5L12 12L7.5 13.5L13.5 16.5L16.5 10.5L10.5 7.5Z"></path></svg>
+                    <svg class="w-16 h-16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"></path><path d="M17 8L15 12L17 16"></path><path d="M7 16V8L12 12L7 16Z"></path></svg>
+                </div>
+                <h2 class="text-4xl font-bold text-sky-800 mb-4">Bem-vindo(a)!</h2>
+                <p class="text-lg text-gray-600 mb-8">Clique no botão abaixo para iniciar sua jornada interativa pela geometria da circunferência. Explore, arraste e aprenda!</p>
+                <button id="start-btn" class="bg-sky-600 text-white font-bold py-3 px-8 rounded-full text-lg hover:bg-sky-700 transition-transform transform hover:scale-105 shadow-lg">
+                    Começar a Explorar
+                </button>
+            </div>
+        </section>
+
+        <!-- Navegação -->
+        <div class="flex flex-wrap justify-center gap-2 md:gap-4 mb-8 hidden" id="tabs">
+            <button class="tab-button active text-sm md:text-base font-semibold py-2 px-5 rounded-full bg-white shadow-sm" data-tab="elementos">Elementos</button>
+            <button class="tab-button text-sm md:text-base font-semibold py-2 px-5 rounded-full bg-white shadow-sm" data-tab="angulos">Ângulos</button>
+            <button class="tab-button text-sm md:text-base font-semibold py-2 px-5 rounded-full bg-white shadow-sm" data-tab="triangulo">Triângulo Inscrito</button>
+            <button class="tab-button text-sm md:text-base font-semibold py-2 px-5 rounded-full bg-white shadow-sm" data-tab="quadrilatero">Quadrilátero Inscrito</button>
+            <button class="tab-button text-sm md:text-base font-semibold py-2 px-5 rounded-full bg-white shadow-sm" data-tab="relacoes">Relações Métricas</button>
+        </div>
+
+        <main id="main-content" class="bg-white p-6 md:p-8 rounded-2xl shadow-lg border border-gray-100 hidden">
+            <!-- Seção de Elementos -->
+            <section id="elementos" class="content-section active">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                    <div class="canvas-container border border-sky-200 rounded-xl shadow-inner">
+                        <canvas id="canvas-elementos"></canvas>
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-bold mb-4 text-sky-800 flex items-center gap-3"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-sky-500"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"></circle></svg>Elementos da Circunferência</h2>
+                        <p class="mb-6 text-gray-600">Selecione um elemento para visualizá-lo na figura e ver sua definição. A circunferência é o conjunto de todos os pontos equidistantes de um ponto central (O).</p>
+                        <div id="elementos-botoes" class="flex flex-wrap gap-3">
+                            <button class="el-btn py-2 px-4 rounded-lg bg-sky-100 text-sky-800 font-medium hover:bg-sky-200 transition" data-el="raio">Raio</button>
+                            <button class="el-btn py-2 px-4 rounded-lg bg-sky-100 text-sky-800 font-medium hover:bg-sky-200 transition" data-el="diametro">Diâmetro</button>
+                            <button class="el-btn py-2 px-4 rounded-lg bg-sky-100 text-sky-800 font-medium hover:bg-sky-200 transition" data-el="corda">Corda</button>
+                            <button class="el-btn py-2 px-4 rounded-lg bg-sky-100 text-sky-800 font-medium hover:bg-sky-200 transition" data-el="arco">Arco</button>
+                            <button class="el-btn py-2 px-4 rounded-lg bg-sky-100 text-sky-800 font-medium hover:bg-sky-200 transition" data-el="tangente">Reta Tangente</button>
+                            <button class="el-btn py-2 px-4 rounded-lg bg-sky-100 text-sky-800 font-medium hover:bg-sky-200 transition" data-el="secante">Reta Secante</button>
+                        </div>
+                        <div id="elementos-info" class="mt-6 p-4 bg-sky-50 border-l-4 border-sky-400 rounded-lg min-h-[100px] transition">
+                            <h3 id="el-titulo" class="font-bold text-lg text-sky-900"></h3>
+                            <p id="el-desc" class="text-gray-700"></p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Seção de Ângulos -->
+            <section id="angulos" class="content-section">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                    <div class="canvas-container border border-sky-200 rounded-xl shadow-inner">
+                        <canvas id="canvas-angulos"></canvas>
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-bold mb-4 text-sky-800 flex items-center gap-3"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-sky-500"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline><path d="m10 10.5 4 4"></path><path d="m14 10.5-4 4"></path></svg>Ângulos na Circunferência</h2>
+                        <p class="mb-4 text-gray-600">Selecione um tipo de ângulo e arraste os pontos <span class="font-bold text-red-500">vermelhos</span> para ver como o ângulo e o arco correspondente se relacionam.</p>
+                        <select id="angulo-select" class="w-full p-2 border border-gray-300 rounded-lg bg-white mb-4 focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
+                            <option value="central">Ângulo Central</option>
+                            <option value="inscrito">Ângulo Inscrito</option>
+                            <option value="segmento">Ângulo de Segmento</option>
+                            <option value="interior">Ângulo Excêntrico Interior</option>
+                            <option value="exterior">Ângulo Excêntrico Exterior</option>
+                        </select>
+                        <div id="angulos-info" class="p-4 bg-sky-50 border-l-4 border-sky-400 rounded-lg">
+                            <h3 id="angulo-formula" class="font-mono text-lg text-sky-900 text-center mb-2"></h3>
+                            <p id="angulo-valores" class="text-center font-medium text-gray-700"></p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Seção Triângulo Inscrito -->
+            <section id="triangulo" class="content-section">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                    <div class="canvas-container border border-sky-200 rounded-xl shadow-inner">
+                        <canvas id="canvas-triangulo"></canvas>
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-bold mb-4 text-sky-800 flex items-center gap-3"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-sky-500"><path d="m21.9 14.2-9.2-9.2a1 1 0 0 0-1.4 0l-9.2 9.2c-.4.4-.4 1 0 1.4l9.2 9.2a1 1 0 0 0 1.4 0l9.2-9.2c.4-.4.4-1 0-1.4z"></path></svg>Triângulo Retângulo Inscrito</h2>
+                        <p class="mb-4 text-gray-600">Arraste o ponto <span class="font-bold text-red-500">vermelho</span> (P) ao longo da circunferência. Observe que o ângulo em P é sempre 90°.</p>
+                        <div class="p-4 bg-sky-50 border-l-4 border-sky-400 rounded-lg">
+                             <p class="text-gray-700 mb-2">Todo triângulo retângulo pode ser inscrito em uma semicircunferência, onde sua hipotenusa (AB) coincide com o diâmetro.</p>
+                             <p class="font-mono text-lg text-sky-900 text-center">Ângulo APB = <span id="triangulo-angulo">90</span>°</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Seção Quadrilátero Inscrito -->
+            <section id="quadrilatero" class="content-section">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                    <div class="canvas-container border border-sky-200 rounded-xl shadow-inner">
+                        <canvas id="canvas-quadrilatero"></canvas>
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-bold mb-4 text-sky-800 flex items-center gap-3"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-sky-500"><rect x="3" y="3" width="18" height="18" rx="2"></rect></svg>Quadrilátero Inscritível</h2>
+                        <p class="mb-4 text-gray-600">Arraste qualquer um dos vértices <span class="font-bold text-red-500">vermelhos</span>. Note que a soma dos ângulos opostos é sempre 180°.</p>
+                        <div class="p-4 bg-sky-50 border-l-4 border-sky-400 rounded-lg">
+                            <p class="text-gray-700 mb-2">Um quadrilátero é inscritível em uma circunferência se, e somente se, seus ângulos opostos são suplementares.</p>
+                            <div class="font-mono text-lg text-sky-900 text-center space-y-1">
+                                <p>Â + Ĉ = <span id="quad-soma1">180</span>°</p>
+                                <p>B + D = <span id="quad-soma2">180</span>°</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Seção Relações Métricas -->
+            <section id="relacoes" class="content-section">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                    <div class="canvas-container border border-sky-200 rounded-xl shadow-inner">
+                        <canvas id="canvas-relacoes"></canvas>
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-bold mb-4 text-sky-800 flex items-center gap-3"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-sky-500"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2z"></path><path d="m15 9-6 6"></path><path d="m9 9 6 6"></path></svg>Relações Métricas (Potência de Ponto)</h2>
+                        <p class="mb-4 text-gray-600">Selecione uma relação e arraste os pontos <span class="font-bold text-red-500">vermelhos</span> para comprovar a igualdade.</p>
+                        <select id="relacao-select" class="w-full p-2 border border-gray-300 rounded-lg bg-white mb-4 focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
+                            <option value="cordas">Potência de Ponto (Duas Cordas)</option>
+                            <option value="secantes">Potência de Ponto (Duas Secantes)</option>
+                            <option value="tangente-secante">Potência de Ponto (Tangente e Secante)</option>
+                        </select>
+                        <div id="relacoes-info" class="p-4 bg-sky-50 border-l-4 border-sky-400 rounded-lg">
+                            <h3 id="relacao-formula" class="font-mono text-lg text-sky-900 text-center mb-2"></h3>
+                            <div id="relacao-valores" class="text-center font-medium text-gray-700 mt-4"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <footer class="text-gray-500 text-sm mt-12 pt-8 border-t border-gray-200 flex flex-col md:flex-row justify-between items-center gap-4">
+            <p>&copy; 2025 Geometria da Circunferência. Todos os direitos reservados.</p>
+            <p>
+                Desenvolvido por 
+                <a href="https://www.instagram.com/professordiovan?igsh=MTM0N3B0a3d4bDQzeg==" target="_blank" rel="noopener noreferrer" class="font-semibold text-sky-600 hover:text-sky-700 transition">
+                    @professordiovan
+                </a>
+            </p>
+        </footer>
+    </div>
+
+    <script>
+    // --- Utilitários ---
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+    
+    // --- Configuração Geral ---
+    const ALL_CANVASES = {};
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- Variáveis Globais da Aplicação ---
+        const tabs = document.querySelectorAll('.tab-button');
+        const sections = document.querySelectorAll('.content-section');
+
+        // --- Navegação por Abas ---
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const targetId = tab.dataset.tab;
+
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+
+                sections.forEach(section => {
+                    section.classList.remove('active');
+                    if (section.id === targetId) {
+                        section.classList.add('active');
+                    }
+                });
+                
+                // Inicializa o canvas da aba ativa somente se ainda não foi criado
+                switch(targetId) {
+                    case 'elementos': if (!ALL_CANVASES.elementos) initElementos(); else ALL_CANVASES.elementos.draw(); break;
+                    case 'angulos': if (!ALL_CANVASES.angulos) initAngulos(); else ALL_CANVASES.angulos.draw(); break;
+                    case 'triangulo': if (!ALL_CANVASES.triangulo) initTriangulo(); else ALL_CANVASES.triangulo.draw(); break;
+                    case 'quadrilatero': if (!ALL_CANVASES.quadrilatero) initQuadrilatero(); else ALL_CANVASES.quadrilatero.draw(); break;
+                    case 'relacoes': if (!ALL_CANVASES.relacoes) initRelacoes(); else ALL_CANVASES.relacoes.draw(); break;
+                }
+            });
+        });
+        
+        // --- Gerenciador de Redimensionamento ---
+        const handleResize = () => {
+            const activeTabId = document.querySelector('.tab-button.active')?.dataset.tab;
+            if (!activeTabId) return;
+
+            for (const key in ALL_CANVASES) {
+                if (ALL_CANVASES[key]) {
+                    ALL_CANVASES[key].resize();
+                }
+            }
+            
+            if (ALL_CANVASES[activeTabId]) {
+                ALL_CANVASES[activeTabId].draw();
+            }
+        };
+        window.addEventListener('resize', debounce(handleResize, 150));
+
+        // --- Classe Principal do Canvas ---
+        class InteractiveCanvas {
+            constructor(canvasId) {
+                this.canvas = document.getElementById(canvasId);
+                if (!this.canvas) {
+                    console.error(`Canvas with id ${canvasId} not found.`);
+                    return;
+                }
+                this.ctx = this.canvas.getContext('2d');
+                this.resize(); // Define as dimensões iniciais
+                
+                this.points = [];
+                this.draggingPoint = null;
+                this.constraint = null;
+
+                this.canvas.addEventListener('mousedown', this.startDrag.bind(this));
+                this.canvas.addEventListener('mousemove', this.drag.bind(this));
+                this.canvas.addEventListener('mouseup', this.endDrag.bind(this));
+                this.canvas.addEventListener('mouseleave', this.endDrag.bind(this));
+                
+                this.canvas.addEventListener('touchstart', this.startDrag.bind(this), { passive: false });
+                this.canvas.addEventListener('touchmove', this.drag.bind(this), { passive: false });
+                this.canvas.addEventListener('touchend', this.endDrag.bind(this));
+            }
+            
+            resize() {
+                if (!this.canvas || !this.canvas.parentElement) return;
+                const newWidth = this.canvas.offsetWidth;
+                const newHeight = this.canvas.offsetHeight;
+                
+                this.width = this.canvas.width = newWidth;
+                this.height = this.canvas.height = newHeight;
+
+                this.center = { x: this.width / 2, y: this.height / 2 };
+                this.radius = Math.min(this.width, this.height) * 0.35;
+                if (this.canvas.id === 'canvas-relacoes' || this.canvas.id === 'canvas-angulos') {
+                    this.radius = Math.min(this.width, this.height) * 0.25;
+                }
+            }
+
+            getMousePos(evt) {
+                const rect = this.canvas.getBoundingClientRect();
+                const touch = evt.touches ? evt.touches[0] : evt;
+                return {
+                    x: (touch.clientX - rect.left) / rect.width * this.width,
+                    y: (touch.clientY - rect.top) / rect.height * this.height
+                };
+            }
+
+            startDrag(evt) {
+                evt.preventDefault();
+                const pos = this.getMousePos(evt);
+                for (const p of this.points) {
+                    if (p.isDraggable && Math.hypot(p.x - pos.x, p.y - pos.y) < 20) { // Maior área de toque
+                        this.draggingPoint = p;
+                        break;
+                    }
+                }
+            }
+
+            drag(evt) {
+                if (!this.draggingPoint) return;
+                evt.preventDefault();
+                const pos = this.getMousePos(evt);
+
+                if (this.constraint && !this.constraint(this.draggingPoint, pos)) {
+                    return; // Restrição falhou
+                }
+
+                this.draggingPoint.updatePosition(pos.x, pos.y);
+                this.draw();
+            }
+
+            endDrag() { this.draggingPoint = null; }
+            clear() { this.ctx.clearRect(0, 0, this.width, this.height); }
+            
+            drawCircle(stroked = true) {
+                this.ctx.beginPath();
+                this.ctx.arc(this.center.x, this.center.y, this.radius, 0, 2 * Math.PI);
+                this.ctx.lineWidth = 2.5;
+                this.ctx.strokeStyle = '#0ea5e9'; // um azul mais vibrante
+                if (stroked) this.ctx.stroke();
+                this.ctx.fillStyle = '#f0f9ff';
+                this.ctx.fill();
+            }
+
+            drawPoint(p, color = 'red', size = 8, label = '') {
+                this.ctx.beginPath();
+                this.ctx.arc(p.x, p.y, size, 0, 2 * Math.PI);
+                this.ctx.fillStyle = color;
+                this.ctx.fill();
+                if (label) {
+                    this.ctx.font = '16px Inter';
+                    this.ctx.fillStyle = '#1e293b'; // cinza escuro
+                    const angle = Math.atan2(p.y - this.center.y, p.x - this.center.x);
+                    const labelX = p.x + (size + 12) * Math.cos(angle);
+                    const labelY = p.y + (size + 12) * Math.sin(angle);
+                    this.ctx.textAlign = 'center';
+                    this.ctx.textBaseline = 'middle';
+                    this.ctx.fillText(label, labelX, labelY);
+                }
+            }
+            
+            drawLine(p1, p2, color = 'black', width = 1.5) {
+                this.ctx.beginPath();
+                this.ctx.moveTo(p1.x, p1.y);
+                this.ctx.lineTo(p2.x, p2.y);
+                this.ctx.strokeStyle = color;
+                this.ctx.lineWidth = width;
+                this.ctx.stroke();
+            }
+
+            drawArc(startAngle, endAngle, color = '#f97316', width = 6) {
+                 this.ctx.beginPath();
+                 this.ctx.arc(this.center.x, this.center.y, this.radius, startAngle, endAngle);
+                 this.ctx.strokeStyle = color;
+                 this.ctx.lineWidth = width;
+                 this.ctx.stroke();
+            }
+
+            drawAngle(p1, vertex, p2, color = '#38bdf8', radius = 30) {
+                const a1 = Math.atan2(p1.y - vertex.y, p1.x - vertex.x);
+                const a2 = Math.atan2(p2.y - vertex.y, p2.x - vertex.x);
+                
+                let angleDiff = a2 - a1;
+                if (angleDiff < 0) angleDiff += 2 * Math.PI;
+
+                this.ctx.beginPath();
+                this.ctx.moveTo(vertex.x, vertex.y);
+
+                if (angleDiff > Math.PI) {
+                    this.ctx.arc(vertex.x, vertex.y, radius, a1, a2, true);
+                } else {
+                    this.ctx.arc(vertex.x, vertex.y, radius, a1, a2, false);
+                }
+                
+                this.ctx.closePath();
+                this.ctx.fillStyle = color + '40';
+                this.ctx.fill();
+            }
+        }
+        
+        // --- Classes de Pontos ---
+        class Point {
+            constructor(x, y, isDraggable = false) { this.x = x; this.y = y; this.isDraggable = isDraggable; }
+            updatePosition(x, y) { this.x = x; this.y = y; }
+        }
+
+        class CirclePoint extends Point {
+            constructor(angle, canvasInstance) {
+                super(0, 0, true);
+                this.canvasInstance = canvasInstance;
+                this.setAngle(angle);
+            }
+            setAngle(angle) {
+                this.angle = angle;
+                const { center, radius } = this.canvasInstance;
+                this.x = center.x + radius * Math.cos(angle);
+                this.y = center.y + radius * Math.sin(angle);
+            }
+            updatePosition(x, y) {
+                const { center } = this.canvasInstance;
+                const newAngle = Math.atan2(y - center.y, x - center.x);
+                this.setAngle(newAngle);
+            }
+        }
+        
+        // --- Funções Auxiliares de Desenho e Cálculo ---
+        function getAngleDeg(p1, vertex, p2) {
+            const a1 = Math.atan2(p1.y - vertex.y, p1.x - vertex.x);
+            const a2 = Math.atan2(p2.y - vertex.y, p2.x - vertex.x);
+            let angle = a2 - a1;
+            if (angle < 0) angle += 2 * Math.PI;
+            if (angle > Math.PI) angle = 2 * Math.PI - angle;
+            return angle * 180 / Math.PI;
+        }
+
+        function drawSegmentLabel(ctx, p1, p2, text, color = '#15803d', offset = -10) {
+            const midX = (p1.x + p2.x) / 2;
+            const midY = (p1.y + p2.y) / 2;
+            
+            ctx.save();
+            ctx.translate(midX, midY);
+            let angle = Math.atan2(p2.y - p1.y, p2.x - p1.x);
+            
+            if (angle > Math.PI / 2 || angle < -Math.PI / 2) angle += Math.PI;
+            
+            ctx.rotate(angle);
+            ctx.font = 'italic 15px Inter';
+            ctx.fillStyle = color;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(text, 0, offset);
+            ctx.restore();
+        }
+
+        function drawAngleLabel(ctx, vertex, p1, p2, angleValue, labelRadius = 45) {
+            let a1 = Math.atan2(p1.y - vertex.y, p1.x - vertex.x);
+            let a2 = Math.atan2(p2.y - vertex.y, p2.x - vertex.x);
+            let angleDiff = a2 - a1;
+
+            if (angleDiff > Math.PI) angleDiff -= 2 * Math.PI;
+            if (angleDiff < -Math.PI) angleDiff += 2 * Math.PI;
+            
+            const midAngle = a1 + angleDiff / 2;
+            const x = vertex.x + labelRadius * Math.cos(midAngle);
+            const y = vertex.y + labelRadius * Math.sin(midAngle);
+
+            ctx.font = 'bold 16px Inter';
+            ctx.fillStyle = '#0369a1';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(`${Math.round(angleValue)}°`, x, y);
+        }
+
+        function drawTextLabel(ctx, vertex, p1, p2, text, color = '#0369a1', labelRadius = 45) {
+            let a1 = Math.atan2(p1.y - vertex.y, p1.x - vertex.x);
+            let a2 = Math.atan2(p2.y - vertex.y, p2.x - vertex.x);
+            let angleDiff = a2 - a1;
+
+            if (angleDiff > Math.PI) angleDiff -= 2 * Math.PI;
+            if (angleDiff < -Math.PI) angleDiff += 2 * Math.PI;
+            
+            const midAngle = a1 + angleDiff / 2;
+            const x = vertex.x + labelRadius * Math.cos(midAngle);
+            const y = vertex.y + labelRadius * Math.sin(midAngle);
+
+            ctx.font = 'bold 14px Inter';
+            ctx.fillStyle = color;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(text, x, y);
+        }
+
+        function drawArcLabel(ctx, center, radius, p1, p2, text, color = '#d946ef') {
+            let startAngle = p1.angle;
+            let endAngle = p2.angle;
+            if (endAngle < startAngle) endAngle += 2 * Math.PI;
+            
+            const midAngle = (startAngle + endAngle) / 2;
+            const labelRadius = radius + 20; 
+            const x = center.x + labelRadius * Math.cos(midAngle);
+            const y = center.y + labelRadius * Math.sin(midAngle);
+
+            ctx.font = 'bold 14px Inter';
+            ctx.fillStyle = color;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(text, x, y);
+        }
+
+        function getArcDeg(p1, p2) {
+            let angle = p2.angle - p1.angle;
+            if (angle < 0) angle += 2 * Math.PI;
+            return angle * 180 / Math.PI;
+        }
+
+        function lineIntersection(p1, p2, p3, p4, checkSegments = true) {
+            const den = (p1.x - p2.x) * (p3.y - p4.y) - (p1.y - p2.y) * (p3.x - p4.x);
+            if (den === 0) return null;
+            const t = ((p1.x - p3.x) * (p3.y - p4.y) - (p1.y - p3.y) * (p3.x - p4.x)) / den;
+            const u = -((p1.x - p2.x) * (p1.y - p3.y) - (p1.y - p2.y) * (p1.x - p3.x)) / den;
+            if (checkSegments && (t < 0 || t > 1 || u < 0 || u > 1)) {
+                return null;
+            }
+            return { x: p1.x + t * (p2.x - p1.x), y: p1.y + t * (p2.y - p1.y) };
+        }
+        
+        function getLineCircleIntersection(p1, p2, center, radius) {
+            let baX = p2.x - p1.x; let baY = p2.y - p1.y;
+            let caX = center.x - p1.x; let caY = center.y - p1.y;
+            let a = baX * baX + baY * baY;
+            let bBy2 = baX * caX + baY * caY;
+            let c = caX * caX + caY * caY - radius * radius;
+            let pBy2 = bBy2 / a; let q = c / a;
+            let disc = pBy2 * pBy2 - q;
+            if (disc < 0) return [];
+            let tmpSqrt = Math.sqrt(disc);
+            let abScalingFactor1 = -pBy2 + tmpSqrt;
+            let abScalingFactor2 = -pBy2 - tmpSqrt;
+            let res1 = { x: p1.x - baX * abScalingFactor1, y: p1.y - baY * abScalingFactor1 };
+            if (disc === 0) return [res1];
+            let res2 = { x: p1.x - baX * abScalingFactor2, y: p1.y - baY * abScalingFactor2 };
+            return [res1, res2];
+        }
+        
+        // --- Inicializadores das Seções ---
+        function initElementos() {
+            const app = new InteractiveCanvas('canvas-elementos');
+            ALL_CANVASES.elementos = app;
+
+            const info = {
+                raio: { titulo: "Raio (r)", desc: "Segmento de reta que une o centro (O) a qualquer ponto da circunferência." },
+                diametro: { titulo: "Diâmetro (d)", desc: "Corda que passa pelo centro da circunferência. O diâmetro é o dobro do raio (d = 2r)." },
+                corda: { titulo: "Corda", desc: "Segmento de reta que une dois pontos distintos da circunferência." },
+                arco: { titulo: "Arco", desc: "Porção da circunferência delimitada por dois de seus pontos." },
+                tangente: { titulo: "Reta Tangente", desc: "Reta que intercepta a circunferência em um único ponto, chamado ponto de tangência." },
+                secante: { titulo: "Reta Secante", desc: "Reta que intercepta a circunferência em dois pontos distintos." }
+            };
+            let activeElement = 'raio';
+
+            app.draw = function() {
+                this.clear();
+                this.drawCircle();
+                this.drawPoint(this.center, '#0369a1', 5, 'O');
+
+                const p1 = new CirclePoint(-Math.PI / 4, this);
+                const p2 = new CirclePoint(Math.PI / 3, this);
+
+                switch(activeElement) {
+                    case 'raio':
+                        this.drawLine(this.center, p1, '#ef4444', 3);
+                        this.drawPoint(p1, '#ef4444', 6); break;
+                    case 'diametro':
+                        const p3 = {x: 2 * this.center.x - p1.x, y: 2 * this.center.y - p1.y};
+                        this.drawLine(p1, p3, '#ef4444', 3);
+                        this.drawPoint(p1, '#ef4444', 6); this.drawPoint(p3, '#ef4444', 6); break;
+                    case 'corda':
+                        this.drawLine(p1, p2, '#ef4444', 3);
+                        this.drawPoint(p1, '#ef4444', 6); this.drawPoint(p2, '#ef4444', 6); break;
+                    case 'arco':
+                        this.drawArc(p1.angle, p2.angle, '#f97316', 6);
+                        this.drawPoint(p1, '#ef4444', 6); this.drawPoint(p2, '#ef4444', 6);
+                        const arco = getArcDeg(p1, p2);
+                        drawArcLabel(this.ctx, this.center, this.radius, p1, p2, `${Math.round(arco)}°`, '#f97316'); break;
+                    case 'tangente':
+                        const tanAngle = p1.angle + Math.PI / 2;
+                        const t1 = {x: p1.x + this.radius * 1.2 * Math.cos(tanAngle), y: p1.y + this.radius * 1.2 * Math.sin(tanAngle)};
+                        const t2 = {x: p1.x - this.radius * 1.2 * Math.cos(tanAngle), y: p1.y - this.radius * 1.2 * Math.sin(tanAngle)};
+                        this.drawLine(t1, t2, '#ef4444', 3); this.drawPoint(p1, '#ef4444', 6); break;
+                    case 'secante':
+                        const dx = p2.x - p1.x, dy = p2.y - p1.y, len = Math.hypot(dx, dy), ext = this.radius * 0.5;
+                        const s1 = { x: p1.x - (dx / len) * ext, y: p1.y - (dy / len) * ext };
+                        const s2 = { x: p2.x + (dx / len) * ext, y: p2.y + (dy / len) * ext };
+                        this.drawLine(s1, s2, '#ef4444', 3);
+                        this.drawPoint(p1, '#ef4444', 6); this.drawPoint(p2, '#ef4444', 6); break;
+                }
+            };
+            
+            document.querySelectorAll('.el-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    activeElement = btn.dataset.el;
+                    document.getElementById('el-titulo').innerText = info[activeElement].titulo;
+                    document.getElementById('el-desc').innerText = info[activeElement].desc;
+                    app.draw();
+                });
+            });
+            
+            document.querySelector('.el-btn[data-el="raio"]').click();
+        }
+
+        function initAngulos() {
+            const app = new InteractiveCanvas('canvas-angulos');
+            ALL_CANVASES.angulos = app;
+
+            let angleType = 'central';
+            const formulaEl = document.getElementById('angulo-formula');
+            const valoresEl = document.getElementById('angulo-valores');
+
+            const getMinorArcDeg = (p1, p2) => {
+                let deg = getArcDeg(p1, p2); return deg > 180 ? 360 - deg : deg;
+            };
+
+            const A = new CirclePoint(-Math.PI * 3/4, app); const B = new CirclePoint(-Math.PI * 1/4, app);
+            const D = new CirclePoint(Math.PI * 1/4, app); const C = new CirclePoint(Math.PI * 3/4, app);
+            const P = new CirclePoint(Math.PI / 2, app);
+
+            app.points = [A, B, P, C, D];
+
+            app.draw = function() {
+                this.clear(); this.drawCircle();
+                const O = this.center;
+                let angulo, arco, formula, valores;
+                
+                this.points.forEach(p => p.isDraggable = false);
+
+                switch(angleType) {
+                    case 'central':
+                        A.isDraggable = true; B.isDraggable = true;
+                        this.drawLine(O, A, '#9ca3af'); this.drawLine(O, B, '#9ca3af');
+                        this.drawAngle(A, O, B); this.drawArc(A.angle, B.angle);
+                        this.drawPoint(A, 'red', 8, 'A'); this.drawPoint(B, 'red', 8, 'B'); this.drawPoint(O, '#0369a1', 5, 'O');
+                        angulo = getAngleDeg(A, O, B); arco = getArcDeg(A, B);
+                        drawAngleLabel(this.ctx, O, A, B, angulo, 35); drawArcLabel(this.ctx, this.center, this.radius, A, B, `${Math.round(arco)}°`, '#f97316');
+                        formula = `α = Arco AB`; valores = `α = ${Math.round(angulo)}° | Arco AB = ${Math.round(arco)}°`; break;
+                    case 'inscrito':
+                        A.isDraggable = true; B.isDraggable = true; P.isDraggable = true;
+                        this.drawLine(P, A, '#9ca3af'); this.drawLine(P, B, '#9ca3af');
+                        this.drawAngle(A, P, B); this.drawArc(A.angle, B.angle);
+                        this.drawPoint(A, 'red', 8, 'A'); this.drawPoint(B, 'red', 8, 'B'); this.drawPoint(P, 'red', 8, 'P');
+                        angulo = getAngleDeg(A, P, B); arco = getArcDeg(A, B);
+                        drawAngleLabel(this.ctx, P, A, B, angulo); drawArcLabel(this.ctx, this.center, this.radius, A, B, `${Math.round(arco)}°`, '#f97316');
+                        formula = `α = (Arco AB) / 2`; valores = `α = ${Math.round(angulo)}° | Arco AB = ${Math.round(arco)}°`; break;
+                    case 'segmento':
+                        A.isDraggable = true; B.isDraggable = true;
+                        const tanAngle = A.angle + Math.PI / 2;
+                        const t1 = {x: A.x + this.radius * 1.5 * Math.cos(tanAngle), y: A.y + this.radius * 1.5 * Math.sin(tanAngle)};
+                        const t2 = {x: A.x - this.radius * 1.5 * Math.cos(tanAngle), y: A.y - this.radius * 1.5 * Math.sin(tanAngle)};
+                        this.drawLine(A, B, '#9ca3af'); this.drawLine(t1, t2, '#333', 2);
+                        this.drawAngle(t1, A, B); this.drawArc(A.angle, B.angle);
+                        this.drawPoint(A, 'red', 8, 'A'); this.drawPoint(B, 'red', 8, 'B');
+                        angulo = getAngleDeg(B, A, t1); arco = getArcDeg(A, B);
+                        drawAngleLabel(this.ctx, A, t1, B, angulo); drawArcLabel(this.ctx, this.center, this.radius, A, B, `${Math.round(arco)}°`, '#f97316');
+                        formula = `α = (Arco AB) / 2`; valores = `α = ${Math.round(angulo)}° | Arco AB = ${Math.round(arco)}°`; break;
+                    case 'interior':
+                        A.isDraggable = true; B.isDraggable = true; C.isDraggable = true; D.isDraggable = true;
+                        this.drawLine(A, D); this.drawLine(B, C);
+                        const intersection = lineIntersection(A,D,B,C);
+                        if(intersection){
+                            const arcoAC = getMinorArcDeg(A, C); const arcoBD = getMinorArcDeg(B, D);
+                            
+                            if (getArcDeg(A, C) > 180) { this.drawArc(C.angle, A.angle, '#f97316', 5); } else { this.drawArc(A.angle, C.angle, '#f97316', 5); }
+                            if (getArcDeg(B, D) > 180) { this.drawArc(D.angle, B.angle, '#8b5cf6', 5); } else { this.drawArc(B.angle, D.angle, '#8b5cf6', 5); }
+
+                            this.drawPoint(A, 'red', 8, 'A'); this.drawPoint(B, 'red', 8, 'B'); this.drawPoint(C, 'red', 8, 'C'); this.drawPoint(D, 'red', 8, 'D');
+                            this.drawPoint(intersection, '#0369a1', 5, 'P');
+                            const anguloAPC = getAngleDeg(A, intersection, C);
+                            drawAngleLabel(this.ctx, intersection, A, C, anguloAPC);
+                            drawTextLabel(this.ctx, intersection, B, D, 'OPV');
+
+                            if (getArcDeg(A, C) > 180) { drawArcLabel(this.ctx, this.center, this.radius, C, A, `${Math.round(arcoAC)}°`, '#f97316'); } else { drawArcLabel(this.ctx, this.center, this.radius, A, C, `${Math.round(arcoAC)}°`, '#f97316'); }
+                            if (getArcDeg(B, D) > 180) { drawArcLabel(this.ctx, this.center, this.radius, D, B, `${Math.round(arcoBD)}°`, '#8b5cf6'); } else { drawArcLabel(this.ctx, this.center, this.radius, B, D, `${Math.round(arcoBD)}°`, '#8b5cf6'); }
+                            
+                            formula = `Ângulo = (Arco AC + Arco BD) / 2`; valores = `${Math.round(anguloAPC)}° ≈ (${Math.round(arcoAC)}° + ${Math.round(arcoBD)}°) / 2`;
+                        } else {
+                            this.drawPoint(A, 'red', 8, 'A'); this.drawPoint(B, 'red', 8, 'B'); this.drawPoint(C, 'red', 8, 'C'); this.drawPoint(D, 'red', 8, 'D');
+                            valores = "Mova os pontos para cruzar as cordas.";
+                        }
+                        break;
+                    case 'exterior':
+                        A.isDraggable = true; B.isDraggable = true; C.isDraggable = true; D.isDraggable = true;
+                        this.points = [A, B, C, D];
+
+                        const P_ext_calc = lineIntersection(A, D, B, C, false);
+
+                        if (P_ext_calc) {
+                            const distToCenter = Math.hypot(P_ext_calc.x - this.center.x, P_ext_calc.y - this.center.y);
+                            
+                            if (distToCenter > this.radius) {
+                                const p_far_1 = Math.hypot(P_ext_calc.x - A.x, P_ext_calc.y - A.y) > Math.hypot(P_ext_calc.x - D.x, P_ext_calc.y - D.y) ? A : D;
+                                const p_far_2 = Math.hypot(P_ext_calc.x - B.x, P_ext_calc.y - B.y) > Math.hypot(P_ext_calc.x - C.x, P_ext_calc.y - C.y) ? B : C;
+                                this.drawLine(P_ext_calc, p_far_1, '#9ca3af');
+                                this.drawLine(P_ext_calc, p_far_2, '#9ca3af');
+                               
+                                this.drawPoint(A, 'red', 8, 'A'); this.drawPoint(B, 'red', 8, 'B');
+                                this.drawPoint(C, 'red', 8, 'C'); this.drawPoint(D, 'red', 8, 'D');
+                                this.drawPoint(P_ext_calc, '#0369a1', 6, 'P');
+
+                                const arco1 = getMinorArcDeg(A, B);
+                                const arco2 = getMinorArcDeg(C, D);
+                                
+                                if (getArcDeg(A, B) > 180) { this.drawArc(B.angle, A.angle, '#f97316'); } else { this.drawArc(A.angle, B.angle, '#f97316'); }
+                                if (getArcDeg(C, D) > 180) { this.drawArc(D.angle, C.angle, '#8b5cf6'); } else { this.drawArc(C.angle, D.angle, '#8b5cf6'); }
+                                
+                                if (getArcDeg(A, B) > 180) { drawArcLabel(this.ctx, this.center, this.radius, B, A, `${Math.round(arco1)}°`, '#f97316'); } else { drawArcLabel(this.ctx, this.center, this.radius, A, B, `${Math.round(arco1)}°`, '#f97316'); }
+                                if (getArcDeg(C, D) > 180) { drawArcLabel(this.ctx, this.center, this.radius, D, C, `${Math.round(arco2)}°`, '#8b5cf6'); } else { drawArcLabel(this.ctx, this.center, this.radius, C, D, `${Math.round(arco2)}°`, '#8b5cf6'); }
+
+                                angulo = getAngleDeg(A, P_ext_calc, C);
+                                drawAngleLabel(this.ctx, P_ext_calc, A, C, angulo, 30);
+                                
+                                formula = `α = |Arco CD - Arco AB| / 2`;
+                                valores = `α = ${Math.round(angulo)}° ≈ |${Math.round(arco2)}° - ${Math.round(arco1)}°| / 2`;
+                            } else {
+                                valores = "Mova os pontos para que as retas se cruzem fora do círculo.";
+                            }
+                        } else {
+                            valores = "Mova os pontos para formar duas secantes (evite retas paralelas).";
+                        }
+                        if (valores.startsWith("Mova")) {
+                             this.drawPoint(A, 'red', 8, 'A'); this.drawPoint(B, 'red', 8, 'B');
+                             this.drawPoint(C, 'red', 8, 'C'); this.drawPoint(D, 'red', 8, 'D');
+                        }
+                        break;
+                }
+                formulaEl.innerHTML = formula || '';
+                valoresEl.innerHTML = valores || '';
+            };
+            
+            document.getElementById('angulo-select').addEventListener('change', (e) => {
+                angleType = e.target.value;
+                app.draw();
+            });
+            app.draw();
+        }
+
+        function initTriangulo() {
+            const app = new InteractiveCanvas('canvas-triangulo');
+            ALL_CANVASES.triangulo = app;
+            const A = new CirclePoint(Math.PI, app); A.isDraggable = false;
+            const B = new CirclePoint(0, app); B.isDraggable = false;
+            const P = new CirclePoint(Math.PI / 3, app);
+            app.points = [P];
+
+            app.draw = function() {
+                this.clear(); this.drawCircle();
+                this.drawLine(A, B, '#333', 3);
+                this.drawLine(A, P); this.drawLine(B, P);
+                this.drawPoint(A, '#0ea5e9', 8, 'A');
+                this.drawPoint(B, '#0ea5e9', 8, 'B');
+                this.drawPoint(P, 'red', 8, 'P');
+                
+                this.drawArc(B.angle, A.angle, '#f97316', 3);
+                this.ctx.font = 'bold 14px Inter';
+                this.ctx.fillStyle = '#f97316';
+                this.ctx.textAlign = 'center';
+                this.ctx.fillText('180°', this.center.x, this.center.y - this.radius - 15);
+
+                const angleP = getAngleDeg(A, P, B);
+                const angleA = getAngleDeg(P, A, B);
+                const angleB = getAngleDeg(A, B, P);
+                
+                this.drawAngle(A, P, B, '#38bdf8', 25);
+                drawAngleLabel(this.ctx, P, A, B, angleP, 35);
+
+                this.drawAngle(P, A, B, '#38bdf8', 25);
+                drawAngleLabel(this.ctx, A, P, B, angleA, 35);
+                
+                this.drawAngle(A, B, P, '#38bdf8', 25);
+                drawAngleLabel(this.ctx, B, A, P, angleB, 35);
+
+                document.getElementById('triangulo-angulo').textContent = Math.round(angleP);
+            };
+            app.draw();
+        }
+
+        function initQuadrilatero() {
+             const app = new InteractiveCanvas('canvas-quadrilatero');
+             ALL_CANVASES.quadrilatero = app;
+
+             const A = new CirclePoint(-Math.PI * 3/4, app); const B = new CirclePoint(-Math.PI * 1/4, app);
+             const C = new CirclePoint(Math.PI * 1/4, app); const D = new CirclePoint(Math.PI * 3/4, app);
+             app.points = [A, B, C, D];
+
+             app.draw = function() {
+                this.clear(); this.drawCircle();
+                this.drawLine(A, B); this.drawLine(B, C);
+                this.drawLine(C, D); this.drawLine(D, A);
+
+                this.drawPoint(A, 'red', 8, 'A'); this.drawPoint(B, 'red', 8, 'B');
+                this.drawPoint(C, 'red', 8, 'C'); this.drawPoint(D, 'red', 8, 'D');
+
+                const angleA = getAngleDeg(D, A, B); 
+                const angleB = getAngleDeg(A, B, C);
+                const angleC = getAngleDeg(B, C, D); 
+                const angleD = getAngleDeg(C, D, A);
+
+                this.drawAngle(D, A, B, '#38bdf8', 25);
+                drawAngleLabel(this.ctx, A, D, B, angleA, 35);
+
+                this.drawAngle(A, B, C, '#38bdf8', 25);
+                drawAngleLabel(this.ctx, B, A, C, angleB, 35);
+
+                this.drawAngle(B, C, D, '#38bdf8', 25);
+                drawAngleLabel(this.ctx, C, B, D, angleC, 35);
+
+                this.drawAngle(C, D, A, '#38bdf8', 25);
+                drawAngleLabel(this.ctx, D, C, A, angleD, 35);
+
+                document.getElementById('quad-soma1').textContent = Math.round(angleA + angleC);
+                document.getElementById('quad-soma2').textContent = Math.round(angleB + angleD);
+             };
+             app.draw();
+        }
+        
+        function initRelacoes() {
+            const app = new InteractiveCanvas('canvas-relacoes');
+            ALL_CANVASES.relacoes = app;
+
+            let relacaoType = 'cordas';
+            const formulaEl = document.getElementById('relacao-formula');
+            const valoresEl = document.getElementById('relacao-valores');
+
+            const A = new CirclePoint(-Math.PI * 3/4, app); const B = new CirclePoint(Math.PI / 4, app);
+            const C = new CirclePoint(-Math.PI / 4, app); const D = new CirclePoint(Math.PI * 3/4, app);
+            const P_ext = new Point(app.center.x - app.radius * 1.5, app.center.y, true);
+            
+            app.draw = function() {
+                this.clear(); this.drawCircle();
+                let formula, valores;
+                const dist = (p1, p2) => Math.hypot(p1.x - p2.x, p1.y - p2.y) / 20;
+
+                switch(relacaoType) {
+                    case 'cordas':
+                        this.points = [A, B, C, D];
+                        const P = lineIntersection(A, C, B, D);
+                        if(P) {
+                            this.drawLine(A, C, '#1e3a8a'); 
+                            this.drawLine(B, D, '#4c1d95');
+                            
+                            this.drawPoint(A, 'red', 8, 'A'); this.drawPoint(B, 'red', 8, 'B');
+                            this.drawPoint(C, 'red', 8, 'C'); this.drawPoint(D, 'red', 8, 'D');
+                            this.drawPoint(P, '#0369a1', 6, 'P');
+
+                            const PA = dist(P, A), PC = dist(P, C);
+                            const PB = dist(P, B), PD = dist(P, D);
+                            
+                            drawSegmentLabel(this.ctx, P, A, `PA = ${PA.toFixed(1)}`, '#1e3a8a');
+                            drawSegmentLabel(this.ctx, P, C, `PC = ${PC.toFixed(1)}`, '#1e3a8a');
+                            drawSegmentLabel(this.ctx, P, B, `PB = ${PB.toFixed(1)}`, '#4c1d95');
+                            drawSegmentLabel(this.ctx, P, D, `PD = ${PD.toFixed(1)}`, '#4c1d95');
+
+                            formula = "PA · PC = PB · PD";
+                            valores = `
+                                <div class="flex justify-around items-center text-center">
+                                    <div class="px-2">
+                                        <span class="text-sm text-gray-500">PA · PC</span>
+                                        <p class="font-semibold text-sky-800 text-lg">${PA.toFixed(1)} · ${PC.toFixed(1)}</p>
+                                        <p class="font-bold text-xl text-emerald-600">${(PA * PC).toFixed(1)}</p>
+                                    </div>
+                                    <div class="text-2xl font-bold text-gray-400">≈</div>
+                                    <div class="px-2">
+                                        <span class="text-sm text-gray-500">PB · PD</span>
+                                        <p class="font-semibold text-sky-800 text-lg">${PB.toFixed(1)} · ${PD.toFixed(1)}</p>
+                                        <p class="font-bold text-xl text-emerald-600">${(PB * PD).toFixed(1)}</p>
+                                    </div>
+                                </div>`;
+                        } else { 
+                            valores = "Mova os pontos para cruzar as cordas."; 
+                            this.drawPoint(A, 'red', 8, 'A'); this.drawPoint(B, 'red', 8, 'B');
+                            this.drawPoint(C, 'red', 8, 'C'); this.drawPoint(D, 'red', 8, 'D');
+                        }
+                        break;
+                    case 'secantes':
+                        this.points = [P_ext];
+                        const s1 = getLineCircleIntersection(P_ext, {x: P_ext.x + 200, y: P_ext.y + 40}, this.center, this.radius);
+                        const s2 = getLineCircleIntersection(P_ext, {x: P_ext.x + 200, y: P_ext.y - 80}, this.center, this.radius);
+                        if (s1.length === 2 && s2.length === 2) {
+                            const [pA, pB] = s1.sort((a,b) => dist(P_ext, a) - dist(P_ext, b));
+                            const [pC, pD] = s2.sort((a,b) => dist(P_ext, a) - dist(P_ext, b));
+                            this.drawLine(P_ext, pB); this.drawLine(P_ext, pD);
+                            this.drawPoint(P_ext, 'red', 8, 'P');
+                            this.drawPoint(pA, '#0ea5e9', 6, 'A'); this.drawPoint(pB, '#0ea5e9', 6, 'B');
+                            this.drawPoint(pC, '#0ea5e9', 6, 'C'); this.drawPoint(pD, '#0ea5e9', 6, 'D');
+                            const PA = dist(P_ext, pA), PB = dist(P_ext, pB), PC = dist(P_ext, pC), PD = dist(P_ext, pD);
+                            
+                            drawSegmentLabel(this.ctx, P_ext, pA, `PA = ${PA.toFixed(1)}`, '#1e3a8a', 15);
+                            drawSegmentLabel(this.ctx, pA, pB, `AB = ${(PB-PA).toFixed(1)}`, '#1e3a8a', 15);
+                            drawSegmentLabel(this.ctx, P_ext, pC, `PC = ${PC.toFixed(1)}`, '#4c1d95', -15);
+                            drawSegmentLabel(this.ctx, pC, pD, `CD = ${(PD-PC).toFixed(1)}`, '#4c1d95', -15);
+                            
+                            formula = "PA · PB = PC · PD"; 
+                            valores = `
+                                <div class="flex justify-around items-center text-center">
+                                    <div class="px-2">
+                                        <span class="text-sm text-gray-500">PA · PB</span>
+                                        <p class="font-semibold text-sky-800 text-lg">${PA.toFixed(1)} · ${PB.toFixed(1)}</p>
+                                        <p class="font-bold text-xl text-emerald-600">${(PA*PB).toFixed(1)}</p>
+                                    </div>
+                                    <div class="text-2xl font-bold text-gray-400">≈</div>
+                                    <div class="px-2">
+                                        <span class="text-sm text-gray-500">PC · PD</span>
+                                        <p class="font-semibold text-sky-800 text-lg">${PC.toFixed(1)} · ${PD.toFixed(1)}</p>
+                                        <p class="font-bold text-xl text-emerald-600">${(PC*PD).toFixed(1)}</p>
+                                    </div>
+                                </div>`;
+                        } else { valores = "Mova o ponto P para fora do círculo."; }
+                        break;
+                    case 'tangente-secante':
+                        this.points = [P_ext];
+                        const sec = getLineCircleIntersection(P_ext, {x: P_ext.x + 200, y: P_ext.y + 40}, this.center, this.radius);
+                        const d_center = Math.hypot(P_ext.x - this.center.x, P_ext.y - this.center.y);
+                        if (d_center > this.radius) {
+                            const a_tan = Math.acos(this.radius / d_center);
+                            const angleToCenter = Math.atan2(P_ext.y - this.center.y, P_ext.x - this.center.x);
+                            const angleT = angleToCenter + a_tan;
+                            const pT = { x: this.center.x + this.radius * Math.cos(angleT), y: this.center.y + this.radius * Math.sin(angleT) };
+                            if (sec.length === 2) {
+                                const [pB, pC] = sec.sort((a,b) => dist(P_ext, a) - dist(P_ext, b));
+                                this.drawLine(P_ext, pC); this.drawLine(P_ext, pT);
+                                this.drawPoint(P_ext, 'red', 8, 'P');
+                                this.drawPoint(pT, '#0ea5e9', 6, 'T');
+                                this.drawPoint(pB, '#0ea5e9', 6, 'B');
+                                this.drawPoint(pC, '#0ea5e9', 6, 'C');
+                                const PT = dist(P_ext, pT), PB = dist(P_ext, pB), PC = dist(P_ext, pC);
+
+                                drawSegmentLabel(this.ctx, P_ext, pT, `PT = ${PT.toFixed(1)}`, '#1e3a8a', 15);
+                                drawSegmentLabel(this.ctx, P_ext, pB, `PB = ${PB.toFixed(1)}`, '#4c1d95', -15);
+                                drawSegmentLabel(this.ctx, pB, pC, `BC = ${(PC-PB).toFixed(1)}`, '#4c1d95', -15);
+
+                                formula = "PT<sup>2</sup> = PB · PC"; 
+                                valores = `
+                                <div class="flex justify-around items-center text-center">
+                                    <div class="px-2">
+                                        <span class="text-sm text-gray-500">PT<sup>2</sup></span>
+                                        <p class="font-semibold text-sky-800 text-lg">${PT.toFixed(1)}<sup>2</sup></p>
+                                        <p class="font-bold text-xl text-emerald-600">${(PT**2).toFixed(1)}</p>
+                                    </div>
+                                    <div class="text-2xl font-bold text-gray-400">≈</div>
+                                    <div class="px-2">
+                                        <span class="text-sm text-gray-500">PB · PC</span>
+                                        <p class="font-semibold text-sky-800 text-lg">${PB.toFixed(1)} · ${PC.toFixed(1)}</p>
+                                        <p class="font-bold text-xl text-emerald-600">${(PB*PC).toFixed(1)}</p>
+                                    </div>
+                                </div>`;
+                            } else { valores = "Mova o ponto P."; }
+                        } else { valores = "Mova o ponto P para fora do círculo."; }
+                        break;
+                }
+                formulaEl.innerHTML = formula || '';
+                valoresEl.innerHTML = valores || '';
+            }
+
+            document.getElementById('relacao-select').addEventListener('change', (e) => {
+                relacaoType = e.target.value;
+                app.draw();
+            });
+            app.draw();
+        }
+
+        // --- Inicialização da Aplicação ---
+        const startBtn = document.getElementById('start-btn');
+        const inicioSection = document.getElementById('inicio');
+        const tabsContainer = document.getElementById('tabs');
+        const mainContent = document.getElementById('main-content');
+
+        startBtn.addEventListener('click', () => {
+            inicioSection.classList.add('hidden');
+            tabsContainer.classList.remove('hidden');
+            mainContent.classList.remove('hidden');
+            
+            // Inicializa o canvas da primeira aba
+            document.querySelector('.tab-button.active').click();
+        });
+    });
+    </script>
+</body>
+</html>
+

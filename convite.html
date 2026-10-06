@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Convite</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Great+Vibes&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --verde: #4b5320;
+    --verde-escuro: #353a16;
+    --verde-claro: #6b7430;
+    --dourado: #c9a24b;
+    --dourado-claro: #e6cb8a;
+    --creme: #f7f1e1;
+    --fonte-titulo: 'Great Vibes', cursive;
+    --fonte-texto: 'Cormorant Garamond', Georgia, serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { min-height: 100%; }
+  body {
+    background: radial-gradient(circle at 50% 0%, var(--verde-claro), var(--verde-escuro) 70%);
+    background-attachment: fixed;
+    color: var(--creme);
+    font-family: var(--fonte-texto);
+    overflow-x: hidden;
+  }
+
+  /* ---------- ENVELOPE ---------- */
+  #envelope-tela {
+    position: fixed; inset: 0; z-index: 10;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 28px; padding: 24px;
+    background: radial-gradient(circle at 50% 0%, var(--verde-claro), var(--verde-escuro) 70%);
+    transition: opacity .9s ease, visibility .9s;
+  }
+  #envelope-tela.some { opacity: 0; visibility: hidden; }
+
+  .envelope {
+    position: relative;
+    width: min(86vw, 360px); aspect-ratio: 3 / 2;
+    background: var(--creme);
+    border-radius: 6px;
+    box-shadow: 0 18px 40px rgba(0,0,0,.45);
+    cursor: pointer;
+    perspective: 900px;
+    transition: transform .8s ease .5s;
+  }
+  .envelope .carta {
+    position: absolute; left: 7%; right: 7%; top: 8%; height: 80%;
+    background: #fffdf6; border: 1px solid var(--dourado);
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--fonte-titulo); font-size: 1.9rem; color: var(--verde);
+    transition: transform .8s ease .45s;
+    z-index: 1;
+  }
+  .envelope .frente {
+    position: absolute; inset: 0; z-index: 2;
+    background:
+      linear-gradient(to top right, transparent 49.5%, #ece3c9 50%) left / 50% 100% no-repeat,
+      linear-gradient(to top left,  transparent 49.5%, #ece3c9 50%) right / 50% 100% no-repeat;
+    border-radius: 6px;
+  }
+  .envelope .frente::after {
+    content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 58%;
+    background: linear-gradient(to top, #e4d9b8, #efe6cc);
+    clip-path: polygon(0 100%, 50% 8%, 100% 100%);
+    border-radius: 0 0 6px 6px;
+  }
+  .envelope .aba {
+    position: absolute; left: 0; right: 0; top: 0; height: 58%;
+    background: linear-gradient(to bottom, #e4d9b8, #d6c9a2);
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+    transform-origin: top; z-index: 3;
+    transition: transform .7s ease, z-index 0s .35s;
+  }
+  .selo {
+    position: absolute; left: 50%; top: 58%; z-index: 4;
+    width: 46px; height: 46px; margin: -23px 0 0 -23px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, var(--dourado-claro), var(--dourado) 60%, #9c7a2c);
+    box-shadow: 0 3px 8px rgba(0,0,0,.4);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--fonte-titulo); font-size: 1.4rem; color: var(--verde-escuro);
+    transition: opacity .3s;
+  }
+  .envelope.aberto .aba { transform: rotateX(180deg); z-index: 0; }
+  .envelope.aberto .selo { opacity: 0; }
+  .envelope.aberto .carta { transform: translateY(-38%); }
+  .envelope.aberto { transform: translateY(40px) scale(.92); }
+
+  .dica {
+    font-style: italic; letter-spacing: .12em; color: var(--dourado-claro);
+    animation: pulsa 2s ease-in-out infinite;
+  }
+  @keyframes pulsa { 50% { opacity: .35; } }
+
+  /* ---------- CONVITE ---------- */
+  #convite {
+    max-width: 480px; margin: 0 auto;
+    padding: 36px 20px calc(48px + env(safe-area-inset-bottom));
+    text-align: center;
+    opacity: 0; transform: translateY(24px);
+    transition: opacity 1s ease .3s, transform 1s ease .3s;
+  }
+  #convite.visivel { opacity: 1; transform: none; }
+
+  .moldura {
+    border: 1px solid var(--dourado);
+    outline: 1px solid rgba(201,162,75,.4); outline-offset: 6px;
+    border-radius: 4px;
+    padding: 36px 22px 32px;
+    background: rgba(53,58,22,.55);
+  }
+  .sobre {
+    text-transform: uppercase; letter-spacing: .32em; font-size: .8rem;
+    color: var(--dourado-claro);
+  }
+  .nomes {
+    font-family: var(--fonte-titulo); font-size: clamp(2.6rem, 13vw, 3.6rem);
+    line-height: 1.15; color: var(--dourado); margin: 14px 0 6px;
+  }
+  .ornamento { color: var(--dourado); letter-spacing: .5em; margin: 6px 0 18px; }
+
+  .foto {
+    width: 62%; max-width: 230px; aspect-ratio: 4 / 5; object-fit: cover;
+    border-radius: 999px 999px 8px 8px;
+    border: 3px solid var(--dourado);
+    box-shadow: 0 10px 28px rgba(0,0,0,.4);
+    margin: 4px auto 22px; display: block;
+  }
+  .texto { font-size: 1.2rem; line-height: 1.55; font-style: italic; margin-bottom: 22px; }
+
+  .quando { font-size: 1.15rem; line-height: 1.6; margin-bottom: 26px; }
+  .quando strong { display: block; color: var(--dourado-claro); font-weight: 600; font-size: 1.35rem; }
+
+  .contagem { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 8px; }
+  .contagem div {
+    border: 1px solid var(--dourado); border-radius: 4px; padding: 10px 2px 8px;
+    background: rgba(0,0,0,.18);
+  }
+  .contagem b { display: block; font-size: 1.7rem; font-weight: 600; color: var(--dourado-claro); }
+  .contagem span { font-size: .7rem; letter-spacing: .15em; text-transform: uppercase; }
+  .contagem-msg { min-height: 1.4em; font-style: italic; color: var(--dourado-claro); margin-bottom: 26px; }
+
+  .botoes { display: flex; flex-direction: column; gap: 12px; }
+  .botao {
+    display: block; padding: 15px 18px; border-radius: 40px;
+    font-family: var(--fonte-texto); font-size: 1.1rem; font-weight: 600;
+    letter-spacing: .08em; text-decoration: none; text-transform: uppercase;
+    transition: transform .15s;
+  }
+  .botao:active { transform: scale(.97); }
+  .botao.ouro { background: linear-gradient(135deg, var(--dourado-claro), var(--dourado)); color: var(--verde-escuro); }
+  .botao.contorno { border: 1.5px solid var(--dourado); color: var(--dourado-claro); }
+</style>
+</head>
+<body>
+
+<!-- ENVELOPE -->
+<div id="envelope-tela">
+  <div class="envelope" id="envelope" role="button" tabindex="0" aria-label="Abrir convite">
+    <div class="carta" id="carta-previa"></div>
+    <div class="frente"></div>
+    <div class="aba"></div>
+    <div class="selo" id="selo-inicial"></div>
+  </div>
+  <p class="dica" id="dica">toque para abrir</p>
+</div>
+
+<!-- CONVITE -->
+<main id="convite">
+  <div class="moldura">
+    <p class="sobre" id="tipo-evento"></p>
+    <h1 class="nomes" id="nomes"></h1>
+    <p class="ornamento">✦ ✦ ✦</p>
+
+    <img class="foto" src="foto.jpg" alt="Foto" onerror="this.style.display='none'">
+
+    <p class="texto" id="texto"></p>
+
+    <div class="quando">
+      <strong id="data-txt"></strong>
+      <span id="hora-txt"></span><br>
+      <span id="local-txt"></span>
+    </div>
+
+    <div class="contagem" id="contagem">
+      <div><b id="c-dias">--</b><span>dias</span></div>
+      <div><b id="c-horas">--</b><span>horas</span></div>
+      <div><b id="c-min">--</b><span>min</span></div>
+      <div><b id="c-seg">--</b><span>seg</span></div>
+    </div>
+    <p class="contagem-msg" id="contagem-msg"></p>
+
+    <div class="botoes">
+      <a class="botao ouro" id="btn-mapa" target="_blank" rel="noopener">Como chegar</a>
+      <a class="botao contorno" id="btn-zap" target="_blank" rel="noopener">Confirmar presença</a>
+    </div>
+  </div>
+</main>
+
+<script>
+  /* =====================================================
+     EDITE AQUI. Tudo que está entre [colchetes] ainda
+     precisa ser preenchido.
+     ===================================================== */
+  const CONFIG = {
+    tipoEvento:  "[casamento / aniversário / 15 anos]",
+    nomes:       "[nomes]",
+    texto:       "[texto curto do convite]",
+    dataTexto:   "[data]",
+    horaTexto:   "[hora]",
+    local:       "[local e endereço]",
+    // Data/hora para a contagem regressiva, no formato AAAA-MM-DDTHH:MM (ex.: 2026-12-20T18:00)
+    dataContagem: "[AAAA-MM-DDTHH:MM]",
+    // WhatsApp: código do país + DDD + número, só dígitos (ex.: 5511999999999)
+    whatsapp:    "55[DDD][número]",
+    inicial:     "[inicial]"   // letra no selo do envelope
+  };
+
+  const $ = id => document.getElementById(id);
+
+  $('tipo-evento').textContent = CONFIG.tipoEvento;
+  $('nomes').textContent = CONFIG.nomes;
+  $('texto').textContent = CONFIG.texto;
+  $('data-txt').textContent = CONFIG.dataTexto;
+  $('hora-txt').textContent = CONFIG.horaTexto ? 'às ' + CONFIG.horaTexto : '';
+  $('local-txt').textContent = CONFIG.local;
+  $('carta-previa').textContent = CONFIG.nomes;
+  $('selo-inicial').textContent = CONFIG.inicial.replace(/[\[\]]/g, '').charAt(0) || '✦';
+
+  // Botões
+  $('btn-mapa').href = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(CONFIG.local);
+  const msg = 'Confirmo minha presença. Nome: __ Pessoas: __';
+  $('btn-zap').href = 'https://wa.me/' + CONFIG.whatsapp.replace(/\D/g, '') + '?text=' + encodeURIComponent(msg);
+
+  // Contagem regressiva
+  const alvo = new Date(CONFIG.dataContagem);
+  const dataValida = !isNaN(alvo.getTime());
+  const pad = n => String(n).padStart(2, '0');
+
+  function atualizar() {
+    if (!dataValida) { $('contagem-msg').textContent = '[defina a data da contagem]'; return; }
+    const falta = alvo - new Date();
+    if (falta <= 0) {
+      ['dias','horas','min','seg'].forEach(k => $('c-' + k).textContent = '00');
+      $('contagem-msg').textContent = 'Chegou o grande dia!';
+      return;
+    }
+    const s = Math.floor(falta / 1000);
+    $('c-dias').textContent  = Math.floor(s / 86400);
+    $('c-horas').textContent = pad(Math.floor(s % 86400 / 3600));
+    $('c-min').textContent   = pad(Math.floor(s % 3600 / 60));
+    $('c-seg').textContent   = pad(s % 60);
+  }
+  atualizar();
+  setInterval(atualizar, 1000);
+
+  // Abrir envelope
+  const env = $('envelope');
+  let aberto = false;
+  function abrir() {
+    if (aberto) return;
+    aberto = true;
+    env.classList.add('aberto');
+    $('dica').style.visibility = 'hidden';
+    setTimeout(() => $('envelope-tela').classList.add('some'), 1700);
+    setTimeout(() => {
+      $('convite').classList.add('visivel');
+      window.scrollTo(0, 0);
+    }, 1900);
+  }
+  env.addEventListener('click', abrir);
+  env.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') abrir(); });
+</script>
+</body>
+</html>
